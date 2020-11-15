@@ -1,0 +1,23 @@
+.statistic-container {
+  max-width: 100%;
+  padding: 0 30px;
+  margin: 32px auto;
+  background: #FFF;
+  border-radius: 30px;
+  border: 1 solid #dcdce6;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
+}
+
+.statistic-container ol {
+  padding: 24px;
+}
+
+.statistic-container ol li {
+  margin: 14px;
+  margin-top: 0;
+  font-size: 16px;
+}
+
+.statistic-container ol li p {
+  margin: 10px;
+}

@@ -1,0 +1,60 @@
+.newForm-container {
+  max-width: 100%;
+  padding: 30px 30px;
+  margin: 32px auto;
+  background: #FFF;
+  border-radius: 30px;
+  border: 1 solid #dcdce6;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
+}
+
+.newForm-container label {
+  font-size: 16px;
+  width: 40%;
+}
+.newForm-container .label-group {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.newForm-container .label-group input {
+  margin: 0;
+}
+
+.newForm-container input {
+  width: 80%;
+  margin-top: 40px;
+  margin-left: 20px;
+
+}
+
+.newForm-container fieldset {
+  margin: 24px auto ;
+  font-size: 16px;
+  border: none;
+}
+
+.newForm-container fieldset button {
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  margin-top: 20px;
+
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.newForm-container fieldset input {
+  width: 70%;
+  margin-bottom: 24px ;
+  margin-left: 0;
+  margin-top: 0;
+  margin-right: 5px;
+}
+
+/* .newForm-container fieldset button + button {
+  margin-top: 0;
+  margin-bottom: 0;
+} */
