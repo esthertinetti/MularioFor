@@ -9,76 +9,90 @@ import logoImg from '../../assets/logo.svg';
 
 export default function NewForms(){
   const history = useHistory();
+
   const [inputList, setInputList] = useState([
-    { question: '', checkbox:''}
-  ]);
-  const [checkboxList, setCheckboxList] = useState([
-    {checkbox: '', label: '' }
-  ]);
-  const[radioList, setRadioList] = useState([
-    { radio: '', label: ''}
+    { 
+      question: '',
+      check: false,
+      checklist: [], 
+      radiolist: [] 
+    }
   ]);
 
-  const [title, setTitle] = useState('');
+  const [ title, setTitle ] = useState('');
+  const [ metaAlcance, setMetaAlcance ] = useState('');
+  const [ colaboradores, setColaboradores ] = useState('');
 
   function addNewInput() {
     setInputList([
       ...inputList,
-      {
+      { 
         question: '',
-        checkbox: ''
+        check: false, 
+        checklist: [], 
+        radiolist: [] 
       }
-    ])
-    inputList.push()
-  }
-
-  function addNewCheck() {
-    setCheckboxList([
-      ...checkboxList,
-      { checkbox: '', label: '', }
-    ])
-    checkboxList.push();
-  }
-
-  function addNewRadio() {
-    setRadioList([
-      ...radioList,
-      { radio: '', label: '', }
-    ])
-    radioList.push();
+    ]);
+    inputList.push();
   }
 
   function removeInput() {
-    const list = [...inputList];
-    list.pop();
-    setInputList(list);
+    const l = [...inputList];
+    if(l.length > 1) {
+      l.pop();
+      setInputList(l);
+    }
+  }
+
+  function addNewCheck(position) {
+    const a = inputList.map((item, index) => {
+      if(position === index) {
+        return {...item, check: true, radiolist: [], checklist: [...item.checklist, { name: '' }] }
+      }
+      return item;
+    });
+    setInputList(a);
+  }
+
+  function addNewRadio(position) {
+    const a = inputList.map((item, index) => {
+      if(position === index) {
+        return {...item, check: false, checklist: [], radiolist: [...item.radiolist, { name: '' }] }
+      }
+      return item;
+    });
+    setInputList(a);
   }
 
   function setInputListValue(position, field, value) {
-    console.log(inputList[position])
-    const updateInputList = inputList.map((inputList, index) => {
-      if(index === position) {
-        return{...inputList, [field]: value};
+    const a = inputList.map((item, index) => {
+      if(position === index) {
+        return {...item, [field]: value }
       }
-
-      return inputList;
+      return item;
     });
-    setInputList(updateInputList);
+    setInputList(a);
   }
 
-  function handleCreateForm(e) {
-    e.preventDefault();
+  function changeInputRadioOrCheck(position, position1, field, value) {
+    const a = inputList.map((item, index) => {
+      if(position === index) {
+        item[field][position1] = value;
+        return {...item };
+      }
+      return item;
+    });
+    setInputList(a);
+  }
 
-    api.post('nomedatabela', {
+  function handleCreateForm() {
+    const params = {
       title,
-      form: inputList,
-    }).then(() => {
-      alert('Cadastrado com sucesso!');
-
-      history.push('/');
-    }).catch(() => {
-      alert('Erro no cadastro!');
-    })
+      metaAlcance,
+      colaboradores,
+      ...inputList
+    };
+    console.log(params);
   }
 
   return(
@@ -92,14 +106,25 @@ export default function NewForms(){
       </header>
 
       <main>
-        <form onSubmit={handleCreateForm} className="newForm-container" >
+        <form className="newForm-container" >
           <div className="label-group">
             <label>Informe a meta que deseja alcançar</label>
-            <input type="number" name="meta" placeholder="Digite o total da meta de entrevistado"/>
+            <input 
+              value={metaAlcance}
+              type="number" 
+              name="meta" 
+              placeholder="Digite o total da meta de entrevistado"
+              onChange={e => setMetaAlcance(e.target.value)}
+            />
           </div>
           <div className="label-group">
             <label>Informe o email dos colaboradores</label>
-            <input type="email" name="emails" placeholder="Digite o e-mail dos entrevistadores colaboradores"/>
+            <input 
+              type="email" 
+              name="emails" 
+              onChange={e => setColaboradores(e.target.value)}
+              placeholder="Digite o e-mail dos entrevistadores colaboradores"
+            />
           </div>
           <div className="label-group">
             <label>Título do formulário</label>
@@ -113,15 +138,15 @@ export default function NewForms(){
           </div>
 
           <fieldset>
-            {inputList.map((inputList, index) => {
+            {inputList.map((inputList, i) => {
               return (
-                <div className="input-list">
+                <div className="input-list" key={i}>
                   <input 
                     name="question"
                     type="text" 
                     placeholder="Digite a pergunta"
                     value={inputList.question}
-                    onChange={e => setInputListValue(index, 'question', e.target.value)}            
+                    onChange={e => setInputListValue(i, 'question', e.target.value)}            
                   />
                   <button type="button" onClick={addNewInput}>
                     <FiPlus />
@@ -129,35 +154,37 @@ export default function NewForms(){
                   <button type="button" onClick={removeInput}>
                     <FiMinus />
                   </button>
-                  <button type="button" onClick={addNewCheck}>
+                  <button type="button" onClick={() => addNewCheck(i)}>
                     <FiCheckSquare />
                   </button>
-                  <button type="button" onClick={addNewRadio}>
+                  <button type="button" onClick={() => addNewRadio(i)}>
                     <FiCheckCircle />
                   </button>
-                  {checkboxList.map((checkboxList, index) => {
+                  {inputList.check && inputList.checklist.map((checkboxList, j) => {
                     return (
-                      <div className="checkbox-list">
+                      <div className="checkbox-list" key={j}>
                         <FormGroup>
                           <FormControlLabel 
-                            value={checkboxList.checkbox} 
+                            value={false} 
                             control={<Checkbox />}
-                            label={<input type="text" placeholder="Opção" 
-                            onChange={e => setInputListValue(index, 'checkbox', e.target.value) } /> }
+                            label={
+                              <input type="text" placeholder="Opção" onChange={e => changeInputRadioOrCheck(i, j, 'checklist', e.target.value) } /> 
+                            }
                           />
                         </FormGroup>
                       </div>
                     );
                   })}
-                  {radioList.map((radioList, index) => {
+                  {!inputList.check && inputList.radiolist.map((radioList, k) => {
                     return (
-                      <div className="radio-list">
+                      <div className="radio-list" key={k}>
                         <RadioGroup>
                           <FormControlLabel 
-                            value={radioList.radio} 
+                            value={false} 
                             control={<Radio />} 
-                            label={<input type="text" placeholder="Opção" 
-                            onChange={e => setInputListValue(index, 'radio', e.target.value) } /> }
+                            label={
+                              <input type="text" placeholder="Opção" onChange={e => changeInputRadioOrCheck(i, k, 'radiolist', e.target.value) } /> 
+                            }
                           />
                         </RadioGroup>
                       </div>
@@ -168,7 +195,7 @@ export default function NewForms(){
             })}
           </fieldset>
         </form>
-        <button type="submit">Cadastrar formulário</button>
+        <button type="button" onClick={() => handleCreateForm()}>Cadastrar formulário</button>
       </main>
     </div>
   );
