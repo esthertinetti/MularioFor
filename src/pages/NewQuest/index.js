@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Link, useHistory} from 'react-router-dom';
 import { Checkbox, FormControlLabel, FormGroup, Radio, RadioGroup } from '@material-ui/core';
 import {FiHome, FiCheckSquare, FiPlus, FiMinus, FiCheckCircle} from 'react-icons/fi';
+
 import api from '../../services/api';
 
 import './styles.css';
@@ -85,14 +86,29 @@ export default function NewForms(){
     setInputList(a);
   }
 
-  function handleCreateForm() {
+  async function handleCreateForm() {
     const params = {
       title,
       metaAlcance,
       colaboradores,
-      ...inputList
+      id_usuario: localStorage.getItem('usuarioID'),
+      lista: [...inputList]
     };
-    console.log(params);
+    if(title && inputList.length > 0 && metaAlcance && colaboradores) {
+
+      try {
+        const response = await api.post('new-form', params);
+        console.log(response);
+
+        history.push('/home');
+  
+      } catch (err) {
+        alert('Falha ao cadastrar, tente novamente.');
+      }
+    }
+    else {
+      alert('Preencha o formulário antes de tentar cadastrar!');
+    }
   }
 
   return(

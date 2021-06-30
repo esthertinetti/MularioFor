@@ -7,56 +7,93 @@ import './styles.css';
 import logoImg from '../../assets/logo.svg';
 
 class Home extends React.PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       list: []
     }
   }
 
-  handleLogout(){
+  handleLogout() {
     localStorage.clear();
     this.props.history.push('/');
+  }
+
+  handleForm() {
+    api.get('home').then(response => {
+      this.setState({
+        list: response.data
+      });
+    })
+  }
+  componentDidMount() {
+    this.handleForm();
+  }
+
+  async handleDelete(id) {
+    try {
+      await api.delete(`home/${id}`);
+
+      this.handleForm();
+    } catch (err) {
+      alert('Erro ao deletar formulário, tente novamente');
+    }
 
   }
 
-  render () {
 
-    return(
+  render() {
+
+    return (
       <div className="profile-container">
-      <header>
-        <img src={logoImg} alt="MularioFor"/>
-        <span>Bem vindo(a), {localStorage.getItem('usuario')} </span>
+        <header>
+          <img src={logoImg} alt="MularioFor" />
+          <span>Bem vindo(a), {localStorage.getItem('usuario')} </span>
 
-        <Link className="button" to="/form/new">Cadastrar novo</Link>
-        <button onClick={this.handleLogout.bind(this)} type="button">
-          <FiArrowLeftCircle size={40} color="#795EFF"/>
-        </button>
-      </header>
-      <h1>Formulários cadastrados</h1>
-      <ul> 
-        {this.state.list.length <= 0
-         ? 
-         <span>AAAAAAAAA</span>
-          :
-        <li>
-          <strong>PESQUISA DE DEMANDA TURISTICA - JAPAN FEST (2020)</strong>
-          <p>Total de perguntas: 28</p>
-          <p>Meta de alcance: 3500</p>
-          <p>Total respondido: 3000</p>
-          <div className="button-group">
-            <Link className="button" to="/forms">Visualizar</Link>
-            <button type="button"><FiTrash2 size={40} color="#795EFF" /></button>   
-            <Link className="back-link" to="/statistics">
-              <button type="button"><FiBarChart2 size={40} color="#795EFF" /></button>
-            </Link>
-          </div>
-        </li>
-        }
-      </ul>
-    </div>
-  );
-}
+          <Link className="button" to="/form/new">Cadastrar novo</Link>
+          <button onClick={this.handleLogout.bind(this)} type="button">
+            <FiArrowLeftCircle size={40} color="#795EFF" />
+          </button>
+        </header>
+        <h1>Formulários cadastrados</h1>
+        <ul>
+          {this.state.list.length <= 0
+            ?
+            <span>Nenhum formulario encontrado.</span>
+            :
+            this.state.list.map((item) => {
+              return (
+                <li key={item.id}>
+                  <strong>{item.title}</strong>
+                  <p>Total de perguntas: {item.total}</p>
+                  <p>Meta de alcance: {item.meta_alcance}</p>
+                  <p>Total respondido: {item.totalRespostas}</p>
+                  <div className="button-group">
+                    <Link className="button" onClick={() => {
+                      localStorage.setItem('total', item.meta_alcance)
+                      localStorage.setItem('respondido', item.totalRespostas)
+                    }} to={`/forms/${item.id}/${item.title}`} >Visualizar</Link>
+                    <button 
+                      type="button"
+                      onClick={() => this.handleDelete(item.id)} 
+                    >
+                      <FiTrash2 size={40} color="#795EFF" />
+                    </button>
+                    <Link className="back-link" to={`/statistic/${item.id}`}>
+                      <button type="button" >
+                          <FiBarChart2 size={40} color="#795EFF" />
+                      </button>
+                    </Link>
+                  </div>
+                </li>
+              );
+            })
+
+          }
+        </ul>
+      </div>
+    );
+  }
 }
 
 export default withRouter(Home);

@@ -18,8 +18,9 @@ export default function Login() {
 
     try {
       const response = await api.post('login', {email, senha});
-      localStorage.setItem('drogado', true);
+      localStorage.setItem('user', true);
       localStorage.setItem('usuario', response.data.nome);
+      localStorage.setItem('usuarioID', response.data.id_usuario);
       history.push('/home');
 
     } catch (err) {

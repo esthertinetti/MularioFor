@@ -16,8 +16,8 @@ export default function Routes () {
         <Route path="/register" component={Register} />
         <Route path="/home" component={Home} />
         <Route path="/form/new" component={NewQuest} />
-        <Route path="/statistics" component={Statistical} />
-        <Route path="/forms" component={Forms} />
+        <Route path="/statistic/:id" component={Statistical} />
+        <Route path="/forms/:id/:name" component={Forms} />
       </Switch>
     </HashRouter>
   )
